@@ -104,4 +104,21 @@ class MapperTest extends TestCase
     $result = Mapper::createMap('somePattern', $dataList);
     $this->assertEquals(true, false, 'There must be the exception'); 
   }
+
+  public function testErrorIfSubArraysDontHaveKeySpecifiedInPattern()
+  {
+    $this->expectException(Exception::class);
+    $dataList = [
+      [1, 2, 3],
+      [1, 2, 3],
+      [1, 2, 3],
+      [1, 2, 3],
+      [
+        'id' => 1,
+        'name' => 'some name'
+      ]
+    ];
+    $result = Mapper::createMap('nonExistingKey', $dataList);
+    $this->assertEquals(true, false, 'There must be the exception');
+  }
 }

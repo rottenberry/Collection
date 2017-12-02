@@ -12,10 +12,14 @@ class Mapper
 		if (empty($pattern)) {
 			throw new \Exception("The pattern is not specified");
 		}
+		$KEY = static::extractKey($pattern);
 		foreach ($dataList as $element) {
-			if (is_array($element)) continue;
-			throw new \Exception("The array must have nested arrays");
-			
+			if (!is_array($element)) {
+				throw new \Exception("The array must have nested arrays");
+			}
+			if (!array_key_exists($KEY, $element)) {
+				throw new \Exception("The arrays don't have $KEY key");
+			}
 		}
 		if (empty($dataList)) return [];
 		return [
@@ -32,5 +36,10 @@ class Mapper
 				'name' => 'fizzbuzz',
 			],
 		];
+	}
+
+	private static function extractKey($pattern)
+	{
+		return $pattern;
 	}
 }
