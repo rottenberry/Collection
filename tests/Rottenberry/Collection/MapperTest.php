@@ -164,4 +164,44 @@ class MapperTest extends TestCase
     }
   }
 
+  public function testMustCreateKeysWithAdditionalText()
+  {
+    $dataList = [
+      [
+        'uniqueID' => 123,
+        'name' => 'lorem ipsum',
+        'anotherUniqueID' => 456,
+      ],
+      [
+        'uniqueID' => 1230,
+        'name' => 'lorem ipsum',
+        'anotherUniqueID' => 4560,
+      ],
+      [
+        'uniqueID' => 12300,
+        'name' => 'lorem ipsum',
+        'anotherUniqueID' => 45600,
+      ],
+      [
+        'uniqueID' => 123000,
+        'name' => 'lorem ipsum',
+        'anotherUniqueID' => 456000,
+      ],
+    ];
+    $result = Mapper::createMap('foo__[uniqueID]__bar', $dataList);
+    $checks = [
+      'foo__123__bar' => 456,
+      'foo__1230__bar' => 4560,
+      'foo__12300__bar' => 45600,
+      'foo__123000__bar' => 456000,
+    ];
+    foreach ($checks as $key => $expected) {
+      $actual = $result[$key]['anotherUniqueID'];
+      $this->assertEquals(
+        $expected,
+        $actual,
+        "$expected vs $actual"
+      );
+    }
+  }
 }
