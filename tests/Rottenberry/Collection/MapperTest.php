@@ -4,6 +4,8 @@ use \PHPUnit\Framework\TestCase;
 
 class MapperTest extends TestCase
 {
+  const MISSED_EXCEPTION = "There must be the exception";
+
   public function testCheckMethod()
   {
     $this->assertEquals(
@@ -88,7 +90,7 @@ class MapperTest extends TestCase
     $result = Mapper::createMap([1,2,3], '');
     $result = Mapper::createMap('');
     $result = Mapper::createMap([]);
-    $this->assertEquals(true, false, 'There must be the exception'); 
+    $this->assertEquals(true, false, static::MISSED_EXCEPTION); 
   }
 
   public function testErrorIfArrayDoesNotConsistOfArrays()
@@ -102,7 +104,7 @@ class MapperTest extends TestCase
       'world',
     ];
     $result = Mapper::createMap('somePattern', $dataList);
-    $this->assertEquals(true, false, 'There must be the exception'); 
+    $this->assertEquals(true, false, static::MISSED_EXCEPTION); 
   }
 
   public function testErrorIfSubArraysDontHaveKeySpecifiedInPattern()
@@ -119,6 +121,47 @@ class MapperTest extends TestCase
       ]
     ];
     $result = Mapper::createMap('nonExistingKey', $dataList);
-    $this->assertEquals(true, false, 'There must be the exception');
+    $this->assertEquals(true, false, static::MISSED_EXCEPTION);
   }
+
+  public function testMustReturnMapWithCorrectKeys()
+  {
+    $dataList = [
+      [
+        'uniqueID' => 123,
+        'name' => 'lorem ipsum',
+        'anotherUniqueID' => 456,
+      ],
+      [
+        'uniqueID' => 1230,
+        'name' => 'lorem ipsum',
+        'anotherUniqueID' => 4560,
+      ],
+      [
+        'uniqueID' => 12300,
+        'name' => 'lorem ipsum',
+        'anotherUniqueID' => 45600,
+      ],
+      [
+        'uniqueID' => 123000,
+        'name' => 'lorem ipsum',
+        'anotherUniqueID' => 456000,
+      ],
+    ];
+    $result = Mapper::createMap('uniqueID', $dataList);
+    $checks = [
+      '123' => 456,
+      '1230' => 4560,
+      '12300' => 45600,
+      '123000' => 456000,
+    ];
+    foreach ($checks as $uniqueID => $anotherUniqueID) {
+      $this->assertEquals(
+        $result[$uniqueID]['anotherUniqueID'],
+        $anotherUniqueID,
+        'The keys are not correct'
+      );
+    }
+  }
+
 }
